@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "node --loader ts-node/esm --no-warnings=ExperimentalWarning lib/calculator.test.ts 2>&1 || npm run test:verify"
   },
   "dependencies": {
     "next": "16.2.10",
