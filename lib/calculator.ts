@@ -125,7 +125,7 @@ function evaluateMultDiv(expression: string): number {
  */
 export interface CalculatorState {
   input: string; // Current number/operand being entered
-  expression: string; // Full expression (e.g., "3 + 5")
+  expression: string; // Full expression accumulated without intermediate evaluation
   result: string; // Display result
   lastWasEquals: boolean; // Track if last action was equals
 }
@@ -251,18 +251,14 @@ export function calculatorReducer(
         };
       }
 
-      // Evaluate current expression and continue
-      const fullExpression = state.expression + state.input;
-      const evalResult = evaluate(fullExpression);
-
-      const resultStr = isNaN(evalResult) ? 'Error' : String(evalResult);
-      const displayResult = resultStr.length > 10 ? resultStr.slice(0, 10) : resultStr;
-
+      // Accumulate the operand to the expression WITHOUT evaluating yet
+      // This preserves operator precedence for chain operations like 2 + 3 * 4
+      const newExpression = state.expression + state.input + ' ' + operator + ' ';
       return {
         ...state,
-        expression: displayResult + ' ' + operator + ' ',
+        expression: newExpression,
         input: '0',
-        result: displayResult,
+        result: state.input, // Keep displaying the current input
       };
     }
 
@@ -275,7 +271,7 @@ export function calculatorReducer(
         };
       }
 
-      // Evaluate the full expression
+      // Evaluate the full expression (complete accumulation)
       const fullExpression = state.expression + state.input;
       const evalResult = evaluate(fullExpression);
 
